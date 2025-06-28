@@ -45,6 +45,13 @@ This project implements a Gephi Toolkit MCP Server. Full requirements and specif
 - [x] Tested state persistence across multiple operations
 - [x] Verified no "No graph loaded" errors in production
 
+## 📋 User Feedback & Findings
+- [x] **Styling Issues Identified**: User reported oversized nodes and label fonts in PNG exports
+- [x] **Root Cause Analysis**: Hardcoded styling parameters in `GraphExporter.java`
+- [x] **Impact Assessment**: 8pt Arial font too large for small networks (4-20 nodes)
+- [x] **Documentation Created**: Future styling API design (`docs/future-styling-api.md`)
+- [x] **Priority Updated**: Visualization styling controls marked as highest priority for Phase 2
+
 ## 🔧 Technical Decisions Made
 1. ✅ Java bridge approach: **persistent GephiService** (maintains state between calls)
 2. ✅ Session management: **in-memory** with GephiContext singleton
@@ -70,14 +77,15 @@ Gephi Toolkit API (graph processing, layouts, import/export)
 - **Git Status**: All code committed and pushed to main branch
 - **Distribution Ready**: NPM package configuration complete
 - **Docker Ready**: Containerization support available
-- **Documentation**: Comprehensive README.md and test documentation
+- **Documentation**: Comprehensive README.md, test documentation, and future API design
 
 ## 📊 Test Results Summary
 - **State Persistence**: ✅ Fixed - graphs persist across operations
-- **PNG Export**: ✅ Working - generates 39-40KB output files
+- **PNG Export**: ✅ Working - generates 39-40KB output files (⚠️ styling needs improvement)
 - **Layout Application**: ✅ Working - Force Atlas 2 with 50-300 iterations
 - **Graph Loading**: ✅ Working - GEXF files load successfully (4 nodes, 5 edges)
 - **Claude Desktop Integration**: ✅ Working - MCP server configured correctly
+- **User Experience**: ⚠️ Identified - node sizes and label fonts too large for small networks
 
 ## Development Notes
 - **Gephi Toolkit version**: 0.10.1
