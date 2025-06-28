@@ -19,31 +19,55 @@ A powerful **Model Context Protocol (MCP) server** that bridges [Gephi Toolkit](
 - 🐳 **Docker Ready**: Containerized deployment support
 - 🚀 **High Performance**: Java-powered processing with Node.js flexibility
 
-## 🛠️ Prerequisites
+## 🚀 Installation Options
 
+Choose your preferred installation method:
+
+| Method | Pros | Cons | Best For |
+|--------|------|------|----------|
+| 🖥️ **Local** | Full control, faster development | Requires dependencies | Developers, customization |
+| 🐳 **Docker** | Isolated, no dependencies | Slightly slower startup | Production, clean environment |
+
+### 🤔 Which Method Should I Choose?
+
+**Choose Local Installation if:**
+- ✅ You're comfortable installing Node.js, Java, and Maven
+- ✅ You want the fastest performance
+- ✅ You plan to modify or develop the code
+- ✅ You're working in a development environment
+
+**Choose Docker Installation if:**
+- ✅ You want a quick, isolated setup
+- ✅ You don't want to install dependencies on your system
+- ✅ You're setting up for production use
+- ✅ You're new to development environments
+- ✅ You want a "just works" solution
+
+---
+
+## 📦 Option A: Local Installation
+
+### Prerequisites
 - **Node.js** 16.0.0 or higher
 - **Java** 11 or higher (JDK/JRE)
 - **Maven** 3.6+ (for building Java components)
 - **Claude Desktop** (for MCP integration)
 
-## 🚀 Quick Start
+### Installation Steps
 
-### 1. Clone & Install
-
+#### 1. Clone & Install
 ```bash
 git clone https://github.com/Andy8647/gephi-toolkit-mcp.git
 cd gephi-toolkit-mcp
 npm install
 ```
 
-### 2. Build Java Components
-
+#### 2. Build Java Components
 ```bash
 npm run build
 ```
 
-### 3. Configure Claude Desktop
-
+#### 3. Configure Claude Desktop
 Add to your `claude_desktop_config.json`:
 
 ```json
@@ -58,7 +82,46 @@ Add to your `claude_desktop_config.json`:
 }
 ```
 
-### 4. Start Analyzing! 🎉
+---
+
+## 🐳 Option B: Docker Installation
+
+### Prerequisites
+- **Docker** (latest version)
+- **Claude Desktop** (for MCP integration)
+
+### Installation Steps
+
+#### 1. Clone Repository
+```bash
+git clone https://github.com/Andy8647/gephi-toolkit-mcp.git
+cd gephi-toolkit-mcp
+```
+
+#### 2. Build Docker Image
+```bash
+docker build -t gephi-toolkit-mcp .
+```
+
+#### 3. Configure Claude Desktop
+Add to your `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "gephi-toolkit": {
+      "command": "docker",
+      "args": ["run", "--rm", "-i", "-v", "$(pwd):/workspace", "gephi-toolkit-mcp"]
+    }
+  }
+}
+```
+
+> **💡 Tip**: The `-v $(pwd):/workspace` mount allows access to files in your current directory
+
+---
+
+## 🎉 Start Analyzing!
 
 Open Claude Desktop and start working with graphs:
 
@@ -66,6 +129,15 @@ Open Claude Desktop and start working with graphs:
 Load my network data from networks.gexf, apply Force Atlas 2 layout, 
 and export it as a PNG visualization.
 ```
+
+### 📁 File Path Notes
+
+| Installation | File Access | Example |
+|--------------|-------------|---------|
+| **Local** | Direct file system access | `./data/network.gexf` |
+| **Docker** | Access mounted directories | `/workspace/network.gexf` |
+
+> **Docker Users**: Place your graph files in the directory where you run the docker command, they'll be accessible at `/workspace/` inside the container.
 
 ## 🎮 Available Tools
 
@@ -89,6 +161,8 @@ gephi-toolkit-mcp/
 │   ├── sample.gexf          # Sample graph file
 │   └── test_*.sh            # Automated tests
 ├── 🐳 Dockerfile            # Container configuration
+├── 🐳 .dockerignore         # Docker build exclusions
+├── 📦 package.json          # Node.js dependencies
 └── 📚 docs/                 # Documentation
 ```
 
@@ -107,23 +181,22 @@ Run comprehensive tests to verify functionality:
 ./test/test_exact_sequence.sh
 ```
 
-## 🐳 Docker Deployment
+## 🐳 Docker Commands Reference
 
-For isolated, dependency-free deployment:
+Quick reference for Docker operations:
 
 ```bash
-# Build container
+# Build image
 docker build -t gephi-toolkit-mcp .
 
-# Configure Claude Desktop for Docker
-{
-  "mcpServers": {
-    "gephi-toolkit": {
-      "command": "docker",
-      "args": ["run", "--rm", "-i", "gephi-toolkit-mcp:latest"]
-    }
-  }
-}
+# Run interactively with file access
+docker run -i --rm -v $(pwd):/workspace gephi-toolkit-mcp
+
+# Run with specific directory mount
+docker run -i --rm -v /path/to/data:/workspace gephi-toolkit-mcp
+
+# Check if image built correctly
+echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test","version":"1.0"}}}' | docker run -i --rm gephi-toolkit-mcp
 ```
 
 ## 📖 Usage Examples
