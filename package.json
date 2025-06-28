@@ -1,0 +1,31 @@
+{
+  "name": "gephi-toolkit-mcp",
+  "version": "1.0.0",
+  "description": "MCP Server for Gephi Toolkit network analysis",
+  "type": "module",
+  "main": "src/index.js",
+  "bin": {
+    "gephi-toolkit-mcp": "./src/index.js"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build-java": "cd java && mvn clean compile",
+    "package-java": "cd java && mvn package",
+    "build": "npm run build-java && npm run package-java",
+    "prepare": "npm run build"
+  },
+  "keywords": ["mcp", "gephi", "graph", "network-analysis"],
+  "author": "",
+  "license": "ISC",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "os": ["darwin", "linux", "win32"],
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.13.2"
+  },
+  "devDependencies": {
+    "pkg": "^5.8.1"
+  }
+}

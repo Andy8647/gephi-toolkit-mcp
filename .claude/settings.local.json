@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir:*)",
+      "Bash(ls:*)",
+      "Bash(java:*)",
+      "Bash(brew install:*)",
+      "Bash(mvn clean:*)",
+      "Bash(find:*)",
+      "Bash(mvn:*)",
+      "Bash(node:*)",
+      "Bash(open:*)",
+      "Bash(pkill:*)",
+      "Bash(rm:*)",
+      "Bash(mv:*)",
+      "Bash(chmod:*)",
+      "Bash(./test_workflow.sh)",
+      "Bash(./test_png_workflow.sh:*)",
+      "Bash(./test_png_simple.sh:*)",
+      "Bash(npm run build-java:*)",
+      "Bash(cp:*)",
+      "Bash(./test_exact_sequence.sh:*)",
+      "Bash(/Users/andy/.nvm/versions/node/v18.9.0/bin/node --input-type=module src/index.js)",
+      "Bash(/Users/andy/.nvm/versions/node/v18.9.0/bin/node src/index.js)",
+      "Bash(git init:*)",
+      "Bash(git config:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": []
+  }
+}
