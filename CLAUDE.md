@@ -89,13 +89,34 @@ Gephi Toolkit API (graph processing, layouts, import/export)
 - **Error Handling**: Comprehensive JSON error responses with stack traces
 
 ## 🎯 Future Enhancements (Phase 2+)
+
+### High Priority
+- [ ] **Visualization Styling Controls** 🎨
+  - [ ] Configurable node sizes and colors
+  - [ ] Adjustable label font sizes and visibility
+  - [ ] Edge thickness and color customization
+  - [ ] Export resolution settings (width/height)
+  - [ ] Background color and transparency options
+
+### Medium Priority  
 - [ ] Additional layout algorithms (Fruchterman-Reingold, Circular, etc.)
 - [ ] Graph filtering and transformation tools
 - [ ] Advanced analytics (centrality measures, community detection)
 - [ ] Batch processing capabilities
+
+### Lower Priority
 - [ ] Performance optimization for large graphs (>10K nodes)
 - [ ] npm package publication
 - [ ] Docker Hub image publication
+
+## 🎨 Current Styling Limitations
+**Note**: Current PNG exports use hardcoded styling in `GraphExporter.java`:
+- **Node label font**: Arial, 8pt (too large for small graphs)
+- **Export resolution**: Fixed 1024x768 pixels
+- **Node sizes**: Determined by Gephi's default sizing
+- **No user control**: All styling parameters are hardcoded
+
+**User Request**: Need configurable node sizes and label fonts for better visualization control.
 
 ---
 📋 **Full Requirements**: See [docs/prd.md](./docs/prd.md) for complete functional specifications.
