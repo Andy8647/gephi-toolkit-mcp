@@ -24,7 +24,11 @@
       "Bash(/Users/andy/.nvm/versions/node/v18.9.0/bin/node src/index.js)",
       "Bash(git init:*)",
       "Bash(git config:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git remote add:*)",
+      "Bash(git branch:*)",
+      "Bash(git push:*)",
+      "Bash(true)"
     ],
     "deny": []
   }

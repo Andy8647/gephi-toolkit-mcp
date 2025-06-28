@@ -32,10 +32,9 @@ pids/
 *.seed
 *.pid.lock
 
-# Test output
-test/output*.png
-test/output*.gexf
-test/output*.pdf
+# Test output files (generated during testing)
+test/output*
+/Users/andy/Downloads/test_output.*
 
 # Temporary files
 *.tmp
