@@ -2,7 +2,6 @@
 
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 import { spawn } from "child_process";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -30,125 +29,93 @@ class GephiMCPServer {
   }
 
   setupToolHandlers() {
-    this.server.setRequestHandler(ListToolsRequestSchema, async () => {
-      return {
-        tools: [
-          {
-            name: "load_graph",
-            description: "Load a graph from file (GEXF, GraphML, GML, DOT, CSV)",
-            inputSchema: {
-              type: "object",
-              properties: {
-                filePath: {
-                  type: "string",
-                  description: "Path to the graph file"
-                },
-                format: {
-                  type: "string",
-                  enum: ["gexf", "graphml", "gml", "dot", "csv"],
-                  description: "Graph file format"
-                }
-              },
-              required: ["filePath"]
-            }
+    this.server.registerTool("load_graph", {
+      description: "Load a graph from file (GEXF, GraphML, GML, DOT, CSV)",
+      inputSchema: {
+        type: "object",
+        properties: {
+          filePath: {
+            type: "string",
+            description: "Path to the graph file"
           },
-          {
-            name: "apply_force_atlas2",
-            description: "Apply Force Atlas 2 layout algorithm",
-            inputSchema: {
-              type: "object",
-              properties: {
-                iterations: {
-                  type: "number",
-                  description: "Number of iterations to run",
-                  default: 100
-                },
-                adjustSizes: {
-                  type: "boolean",
-                  description: "Adjust node sizes based on degree",
-                  default: false
-                },
-                barnesHutOptimize: {
-                  type: "boolean", 
-                  description: "Use Barnes-Hut optimization",
-                  default: true
-                },
-                gravity: {
-                  type: "number",
-                  description: "Gravity parameter",
-                  default: 1.0
-                },
-                scalingRatio: {
-                  type: "number",
-                  description: "Scaling ratio",
-                  default: 2.0
-                }
-              }
-            }
-          },
-          {
-            name: "get_graph_info",
-            description: "Get basic information about the loaded graph",
-            inputSchema: {
-              type: "object",
-              properties: {},
-              additionalProperties: false
-            }
-          },
-          {
-            name: "save_graph",
-            description: "Save the current graph to file",
-            inputSchema: {
-              type: "object",
-              properties: {
-                filePath: {
-                  type: "string",
-                  description: "Path where to save the graph"
-                },
-                format: {
-                  type: "string",
-                  enum: ["gexf", "graphml", "pdf", "png"],
-                  description: "Output format"
-                }
-              },
-              required: ["filePath", "format"]
-            }
+          format: {
+            type: "string",
+            enum: ["gexf", "graphml", "gml", "dot", "csv"],
+            description: "Graph file format"
           }
-        ]
-      };
+        },
+        required: ["filePath"]
+      }
+    }, async (args) => {
+      return await this.loadGraph(args.filePath, args.format);
     });
 
-    this.server.setRequestHandler(CallToolRequestSchema, async (request) => {
-      const { name, arguments: args } = request.params;
-
-      try {
-        switch (name) {
-          case "load_graph":
-            return await this.loadGraph(args.filePath, args.format);
-          
-          case "apply_force_atlas2":
-            return await this.applyForceAtlas2(args);
-          
-          case "get_graph_info":
-            return await this.getGraphInfo();
-          
-          case "save_graph":
-            return await this.saveGraph(args.filePath, args.format);
-          
-          default:
-            throw new Error(`Unknown tool: ${name}`);
+    this.server.registerTool("apply_force_atlas2", {
+      description: "Apply Force Atlas 2 layout algorithm",
+      inputSchema: {
+        type: "object",
+        properties: {
+          iterations: {
+            type: "number",
+            description: "Number of iterations to run",
+            default: 100
+          },
+          adjustSizes: {
+            type: "boolean",
+            description: "Adjust node sizes based on degree",
+            default: false
+          },
+          barnesHutOptimize: {
+            type: "boolean",
+            description: "Use Barnes-Hut optimization",
+            default: true
+          },
+          gravity: {
+            type: "number",
+            description: "Gravity parameter",
+            default: 1.0
+          },
+          scalingRatio: {
+            type: "number",
+            description: "Scaling ratio",
+            default: 2.0
+          }
         }
-      } catch (error) {
-        return {
-          content: [
-            {
-              type: "text",
-              text: `Error: ${error.message}`
-            }
-          ],
-          isError: true
-        };
       }
+    }, async (args) => {
+      return await this.applyForceAtlas2(args);
+    });
+
+    this.server.registerTool("get_graph_info", {
+      description: "Get basic information about the loaded graph",
+      inputSchema: {
+        type: "object",
+        properties: {},
+        additionalProperties: false
+      }
+    }, async () => {
+      return await this.getGraphInfo();
+    });
+
+    this.server.registerTool("save_graph", {
+      description: "Save the current graph to file",
+      inputSchema: {
+        type: "object",
+        properties: {
+          filePath: {
+            type: "string",
+            description: "Path where to save the graph"
+          },
+          format: {
+            type: "string",
+            enum: ["gexf", "graphml", "pdf", "png"],
+            description: "Output format"
+          }
+        },
+        required: ["filePath", "format"]
+      }
+    }, async (args) => {
+      return await this.saveGraph(args.filePath, args.format);
     });
   }
 
@@ -156,10 +123,10 @@ class GephiMCPServer {
     if (this.javaService && !this.javaService.killed) {
       return;
     }
-    
+
     const javaPath = path.join(__dirname, "..", "java");
     const classpath = path.join(javaPath, "target", "classes") + ":" + path.join(javaPath, "target", "*");
-    
+
     this.javaService = spawn("java", [
       "-cp", classpath,
       "com.gephi.mcp.GephiService"
@@ -167,38 +134,38 @@ class GephiMCPServer {
       stdio: ["pipe", "pipe", "pipe"],
       env: { ...process.env, PATH: "/opt/homebrew/opt/openjdk@11/bin:" + process.env.PATH }
     });
-    
+
     this.javaService.stderr.on("data", (data) => {
       console.error("Java service error:", data.toString());
     });
-    
+
     this.javaService.on("close", (code) => {
       console.log("Java service exited with code:", code);
       this.javaService = null;
     });
-    
+
     // Wait for service to start
     await new Promise(resolve => setTimeout(resolve, 1000));
   }
-  
+
   async callJavaService(operation, params = {}) {
     await this.startJavaService();
-    
+
     return new Promise((resolve, reject) => {
       const request = JSON.stringify({ operation, params });
-      
+
       let responseReceived = false;
       const timeout = setTimeout(() => {
         if (!responseReceived) {
           reject(new Error("Java service timeout"));
         }
       }, 10000);
-      
+
       const onData = (data) => {
         if (responseReceived) return;
         responseReceived = true;
         clearTimeout(timeout);
-        
+
         try {
           const response = JSON.parse(data.toString().trim());
           resolve(response);
@@ -206,7 +173,7 @@ class GephiMCPServer {
           reject(new Error("Invalid JSON response from Java service"));
         }
       };
-      
+
       this.javaService.stdout.once("data", onData);
       this.javaService.stdin.write(request + "\n");
     });
@@ -216,7 +183,7 @@ class GephiMCPServer {
     return new Promise((resolve, reject) => {
       const javaPath = path.join(__dirname, "..", "java");
       const classpath = path.join(javaPath, "target", "classes") + ":" + path.join(javaPath, "target", "*");
-      
+
       const javaProcess = spawn("java", [
         "-cp", classpath,
         className,
@@ -258,7 +225,7 @@ class GephiMCPServer {
 
   async loadGraph(filePath, format) {
     const result = await this.callJavaService("load_graph", { filePath, format: format || "auto" });
-    
+
     if (result.success) {
       return {
         content: [
@@ -275,7 +242,7 @@ class GephiMCPServer {
 
   async applyForceAtlas2(options = {}) {
     const result = await this.callJavaService("apply_force_atlas2", options);
-    
+
     if (result.success) {
       return {
         content: [
@@ -310,7 +277,7 @@ class GephiMCPServer {
 
   async saveGraph(filePath, format) {
     const result = await this.callJavaService("save_graph", { filePath, format });
-    
+
     if (result.success) {
       return {
         content: [
